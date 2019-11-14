@@ -9,12 +9,15 @@ class {:autocontracts} BoundedQueue<T(0)> {
     predicate Valid()
     {
         0 <= n <= q.Length &&
-        contents == q[0..n] &&
         0 <= first < q.Length &&
         0 <= last < q.Length &&
         (first == last) <==> (n == 0 || n == q.Length) &&
         (n > 0 && first < last) ==> n == last - first &&
-        (n > 0 && first >= last) ==> n == q.Length + last - first
+        (n > 0 && first >= last) ==> n == q.Length + last - first &&
+        first < last ==> contents == q[first..last] &&
+        first > last ==> contents == q[0..last] + q[first..q.Length] && 
+        first == last && n == q.Length ==> contents == q[0..n] &&
+        first == last && n == 0 ==> contents == []
         
     }
 
