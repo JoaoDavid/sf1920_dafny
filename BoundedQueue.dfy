@@ -11,31 +11,30 @@ class {:autocontracts} BoundedQueue<T(0)> {
         0 <= n <= q.Length &&
         0 <= first < q.Length &&
         0 <= last < q.Length &&
+        q.Length > 0 &&
+        //contents == q[0..n] &&
         (first == last) <==> (n == 0 || n == q.Length) &&
         (n > 0 && first < last) ==> n == last - first &&
-        (n > 0 && first >= last) ==> n == q.Length + last - first &&
-        first < last ==> contents == q[first..last] &&
+        (n > 0 && first >= last) ==> n == q.Length + last - first
+        /*first < last ==> contents == q[first..last] &&
         first > last ==> contents == q[0..last] + q[first..q.Length] && 
-        first == last && n == q.Length ==> contents == q[0..n] &&
-        first == last && n == 0 ==> contents == []
+        n == q.Length ==> contents == q[0..n] &&
+        n == 0 <==> contents == []*/
         
     }
 
     constructor (length : nat)
         requires length > 0
-        ensures contents == []
         ensures Valid()
     {
         q := new T[length];
         n := 0;
         first := 0;
         last := 0;
-        contents := []; // ghost code
+        //contents := q[0..n]; // ghost code
     }
 
     function method IsEmpty(): bool
-        ensures IsEmpty() <==> contents == []
-        //ensures IsEmpty() ==> (first == last)
     {
         n == 0
     }
@@ -52,43 +51,34 @@ class {:autocontracts} BoundedQueue<T(0)> {
     method Enqueue(item: T)
         requires !IsFull()
     {   
-        if (first < last) {
-            if (last + 1 >= q.Length) {//da a volta
-                q[last] := item;
-                last := 0;
-                n := n + 1;
-            } else{
-                q[last] := item;
-                last := last + 1;
-                n := n + 1;
-            }
-        } else if (first > last) { //first > last
-                q[last] := item;
-                last := last + 1;
-                n := n + 1;
+        /*if (last < first) {
+            q[last] := item;
+            last := last + 1;
+            n := n + 1;
+            assert Valid();
+            //contents := q[0..n];
+        } else if(first == last) { //vai dar a volta
+               q[last] := item;
+               n := n + 1;
+               last := 0;
+               assert Valid();
+          
+          
+        }*/
+        if (last < q.Length - 1 && n == 0) {
+            q[last] := item;
+            last := last + 1;
+            n := last - first;
+            assert last < q.Length;
+            assert Valid();
         }
-        /*q[last] := item; 
-        last := last + 1;*/
     }
 
     // Removes and returns the item on this queue that was least recently added 
     method Dequeue() returns (item: T)
         requires !IsEmpty()
     {
-        /*if(first <= last){
-            item := q[first];
-            first := first + 1;
-            n := n - 1;
-        }*/
-        //n := n - 1;
         
-        /*if (IsFull()) {
-            last := q.Length - 1;
-            item := q[last];
-        } else {
-            last := last - 1;
-        }
-        item := q[last];*/
     }
 
     // Returns the item least recently added to this queue 
