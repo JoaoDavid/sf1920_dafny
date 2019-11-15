@@ -4,7 +4,7 @@
  * Faculty of Sciences
  * University of Lisbon
  * November 18, 2019
- * João David
+ * João David n49448
  *
  * A model-based specification of a bounded queue of elements of type T.
  */
