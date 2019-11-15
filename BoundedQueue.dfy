@@ -1,3 +1,13 @@
+/**
+ * Reliable Software
+ * Department of Informatics
+ * Faculty of Sciences
+ * University of Lisbon
+ * November 18, 2019
+ * João David
+ *
+ * A model-based specification of a bounded queue of elements of type T.
+ */
 class {:autocontracts} BoundedQueue<T(0)> {
 
     ghost var contents: seq<T>
@@ -23,6 +33,7 @@ class {:autocontracts} BoundedQueue<T(0)> {
         contents == if first < last then q[first..last] else if n == 0 then [] else q[first..q.Length] + q[0..last]
     }
 
+    //Initializes an empty queue of length, length
     constructor (length : nat)
         requires length > 0
         ensures Valid()
@@ -35,21 +46,15 @@ class {:autocontracts} BoundedQueue<T(0)> {
         contents := [];
     }
 
+    //Is this queue empty? 
     function method IsEmpty(): bool
-        //reads this,q
-        requires Valid()
-        ensures Valid()
         ensures IsEmpty() <==> contents == []
-        //ensures IsEmpty() ==> first == last
     {
         n == 0
     }
 
-    
+    //Is this queue full? 
     function method IsFull(): bool
-        //reads this,q
-        requires Valid()
-        ensures Valid()
         ensures IsFull() ==> |contents| == n
     {
         n == q.Length
@@ -57,21 +62,14 @@ class {:autocontracts} BoundedQueue<T(0)> {
 
     // Adds the item to this queue 
     method Enqueue(item: T)
-        modifies this,q
-        requires Valid()
-        ensures Valid()
         requires !IsFull()
-       // ensures q == old(q)
-        /*ensures n < q.Length ==> !IsFull()
-        ensures n == q.Length ==> IsFull()*/
+        ensures contents == old(contents + [item])
     {  
         q[last] := item;
-        //assert n != q.Length;
         if (first > last){            
             last := last + 1;
             n := n + 1;
             contents := q[first..q.Length] + q[0..last];
-            //assert Valid();
         } else if (first < last) {
             if (last + 1 == q.Length){
                 last := 0;
@@ -83,12 +81,11 @@ class {:autocontracts} BoundedQueue<T(0)> {
                 contents := q[first..last];
             }
         } else { //first == last
-            if (last + 1 == q.Length ){
+            if (last + 1 == q.Length ){ //when last == q.Length - 1
                 last := 0;
                 n := n + 1;
                 contents := q[first..q.Length];
-                //assert n != 0; 
-            } else {//when first == last == all index except q.Length - 1
+            } else {//when first == last (all indexes, except q.Length - 1)
                 last := last + 1;
                 n := n + 1;
                 contents := q[first..last];
@@ -98,9 +95,8 @@ class {:autocontracts} BoundedQueue<T(0)> {
 
     // Removes and returns the item on this queue that was least recently added 
     method Dequeue() returns (item: T)
-        requires Valid()
-        ensures Valid()
         requires !IsEmpty()
+        ensures contents == old(contents[1..n])
     {
         assert n > 0;
         item := q[first];
@@ -108,7 +104,6 @@ class {:autocontracts} BoundedQueue<T(0)> {
             first := first + 1;
             n := n - 1;
             contents := q[first..last];
-            //assert Valid();
         } else if (first > last) {
             if (first + 1 == q.Length){
                 first := 0;
@@ -134,9 +129,6 @@ class {:autocontracts} BoundedQueue<T(0)> {
 
     // Returns the item least recently added to this queue 
     function method Peek(): T
-        //reads this,q
-        requires Valid()
-        ensures Valid()
         requires !IsEmpty()
         ensures Peek() == contents[0]
     {   
@@ -173,7 +165,7 @@ class {:autocontracts} BoundedQueue<T(0)> {
 
 }
 
-/*method Main() {
+method Main() {
   print "BoundedQueue\n";
   var length := 3;
   var q := new BoundedQueue<int>(length);
@@ -219,4 +211,4 @@ if (!q.IsEmpty()){
     print "\nElemDeq ";print(e);
   }
   print "\nPrintQueue "; q.PrintQueue();
-}*/
+}
