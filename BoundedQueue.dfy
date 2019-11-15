@@ -17,26 +17,20 @@ class {:autocontracts} BoundedQueue<T(0)> {
     var last: nat
 
     predicate Valid()
-        reads this,q
     {
         0 <= n <= q.Length &&
         0 <= first < q.Length &&
         0 <= last < q.Length &&
-        q.Length > 0 && n == |contents| &&
+        n == |contents| &&
         ((first == last) <==> (n == 0 || n == q.Length)) &&
         ((n > 0 && first < last) ==> (n == last - first)) &&
         ((n > 0 && first >= last) ==> (n == (q.Length + last - first))) &&
-        /*(first < last ==> contents == q[first..last]) &&
-        (first > last ==> contents == q[first..q.Length] + q[0..last]) && 
-        (first == last && n == q.Length ==> contents == q[first..q.Length] + q[0..last]) &&
-        (first == last && n == 0 ==> contents == [])*/
         contents == if first < last then q[first..last] else if n == 0 then [] else q[first..q.Length] + q[0..last]
     }
 
     //Initializes an empty queue of length, length
     constructor (length : nat)
         requires length > 0
-        ensures Valid()
         ensures contents == []
     {
         q := new T[length];
@@ -136,15 +130,6 @@ class {:autocontracts} BoundedQueue<T(0)> {
     }
 
     //debug methods
-    function method Size(): nat
-        //reads this,q
-        requires Valid()
-        ensures Valid()
-        //ensures contents == old(contents)
-    {   
-        n
-    }
-
     method PrintQueue()
         //reads this,q
         requires Valid()
