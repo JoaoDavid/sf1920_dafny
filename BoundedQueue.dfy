@@ -138,7 +138,7 @@ class {:autocontracts} BoundedQueue<T(0)> {
         requires Valid()
         ensures Valid()
         requires !IsEmpty()
-        //ensures contents == old(contents)
+        //ensures Peek() == contents[first]
     {   
         assert  0 <= first ;
         q[first]
@@ -197,41 +197,27 @@ method Main() {
   if (!q.IsFull()){
     q.Enqueue(-11);
   }
-  print "\nPrintQueue "; q.PrintQueue();
-  if (!q.IsEmpty()){
+    if (!q.IsEmpty()){
     var e := q.Dequeue();
     print "\nElemDeq ";print(e);
-  }
-  
-  if (!q.IsFull()){
-    q.Enqueue(-12);
   }
   if (!q.IsFull()){
-    q.Enqueue(-13);
-  }
-  print "\nPrintQueue "; q.PrintQueue();
-  if (!q.IsEmpty()){
-    var e := q.Dequeue();
-    print "\nElemDeq ";print(e);
+    q.Enqueue(-11);
   }
   if (!q.IsEmpty()){
     var e := q.Dequeue();
     print "\nElemDeq ";print(e);
   }
-  if (!q.IsEmpty()){
-    var e := q.Dequeue();
-    print "\nElemDeq ";print(e);
+  if (!q.IsFull()){
+    q.Enqueue(-11);
   }
-    print "\nPrintQueue "; q.PrintQueue();
-    if (!q.IsFull()){
-    q.Enqueue(-21);
-  }
+  /*
+    PrintQueue -11 : -11 : -11 :
+    first: 0  last: 0  n: 3
+  */
 if (!q.IsEmpty()){
     var e := q.Dequeue();
     print "\nElemDeq ";print(e);
   }
-
-
-
   print "\nPrintQueue "; q.PrintQueue();
 }
