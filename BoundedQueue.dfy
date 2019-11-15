@@ -60,28 +60,24 @@ class {:autocontracts} BoundedQueue<T(0)> {
         ensures contents == old(contents + [item])
     {  
         q[last] := item;
+        n := n + 1;
         if (first > last){            
             last := last + 1;
-            n := n + 1;
             contents := q[first..q.Length] + q[0..last];
         } else if (first < last) {
             if (last + 1 == q.Length){
                 last := 0;
-                n := n + 1;
                 contents := q[first..q.Length];
             } else {
                 last := last + 1;
-                n := n + 1;
                 contents := q[first..last];
             }
         } else { //first == last
             if (last + 1 == q.Length ){ //when last == q.Length - 1
                 last := 0;
-                n := n + 1;
                 contents := q[first..q.Length];
             } else {//when first == last (all indexes, except q.Length - 1)
                 last := last + 1;
-                n := n + 1;
                 contents := q[first..last];
             }
         }
@@ -91,31 +87,27 @@ class {:autocontracts} BoundedQueue<T(0)> {
     method Dequeue() returns (item: T)
         requires !IsEmpty()
         ensures contents == old(contents[1..n])
+        ensures item == old(contents[0])
     {
-        assert n > 0;
+        n := n - 1;
         item := q[first];
         if (first < last){            
             first := first + 1;
-            n := n - 1;
             contents := q[first..last];
         } else if (first > last) {
             if (first + 1 == q.Length){
                 first := 0;
-                n := n - 1;
                 contents := q[first..last];
             } else {
                 first := first + 1;
-                n := n - 1;
                 contents := q[first..q.Length] + q[0..last];
             }
         } else{ //first == last
             if (first + 1 == q.Length ){
                 first := 0;
-                n := n - 1;
                 contents := q[first..last];
             } else {
                 first := first + 1;
-                n := n - 1;
                 contents :=  q[first..q.Length] + q[0..last];
             }
         }
