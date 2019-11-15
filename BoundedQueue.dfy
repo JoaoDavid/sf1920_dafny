@@ -12,20 +12,21 @@ class {:autocontracts} BoundedQueue<T(0)> {
         0 <= n <= q.Length &&
         0 <= first < q.Length &&
         0 <= last < q.Length &&
-        q.Length > 0 &&
+        q.Length > 0 && n == |contents| &&
         ((first == last) <==> (n == 0 || n == q.Length)) &&
         ((n > 0 && first < last) ==> (n == last - first)) &&
         ((n > 0 && first >= last) ==> (n == (q.Length + last - first))) &&
-        (first < last ==> contents == q[first..last]) &&
-        (first > last ==> contents == q[0..last] + q[first..q.Length]) && 
-        (first == last && n == q.Length ==> contents == q[0..n]) &&
-        (first == last && n == 0 ==> contents == [])
+        /*(first < last ==> contents == q[first..last]) &&
+        (first > last ==> contents == q[first..q.Length] + q[0..last]) && 
+        (first == last && n == q.Length ==> contents == q[first..q.Length] + q[0..last]) &&
+        (first == last && n == 0 ==> contents == [])*/
+        contents == if first < last then q[first..last] else if n == 0 then [] else q[first..q.Length] + q[0..last]
     }
 
     constructor (length : nat)
         requires length > 0
         ensures Valid()
-        //ensures contents == []
+        ensures contents == []
     {
         q := new T[length];
         n := 0;
@@ -38,7 +39,7 @@ class {:autocontracts} BoundedQueue<T(0)> {
         //reads this,q
         requires Valid()
         ensures Valid()
-        //ensures IsEmpty() <==> contents == []
+        ensures IsEmpty() <==> contents == []
         //ensures IsEmpty() ==> first == last
     {
         n == 0
@@ -49,8 +50,7 @@ class {:autocontracts} BoundedQueue<T(0)> {
         //reads this,q
         requires Valid()
         ensures Valid()
-        ensures IsFull() <==> n == q.Length
-        //ensures !IsFull() ==> last > 0
+        ensures IsFull() ==> |contents| == n
     {
         n == q.Length
     }
@@ -70,7 +70,7 @@ class {:autocontracts} BoundedQueue<T(0)> {
         if (first > last){            
             last := last + 1;
             n := n + 1;
-            contents := q[0..last] + q[first..q.Length];
+            contents := q[first..q.Length] + q[0..last];
             //assert Valid();
         } else if (first < last) {
             if (last + 1 == q.Length){
@@ -117,7 +117,7 @@ class {:autocontracts} BoundedQueue<T(0)> {
             } else {
                 first := first + 1;
                 n := n - 1;
-                contents := q[0..last] + q[first..q.Length];
+                contents := q[first..q.Length] + q[0..last];
             }
         } else{ //first == last
             if (first + 1 == q.Length ){
@@ -127,7 +127,7 @@ class {:autocontracts} BoundedQueue<T(0)> {
             } else {
                 first := first + 1;
                 n := n - 1;
-                contents := q[0..last] + q[first..q.Length];
+                contents :=  q[first..q.Length] + q[0..last];
             }
         }
     }
@@ -138,9 +138,8 @@ class {:autocontracts} BoundedQueue<T(0)> {
         requires Valid()
         ensures Valid()
         requires !IsEmpty()
-        //ensures Peek() == contents[first]
+        ensures Peek() == contents[0]
     {   
-        assert  0 <= first ;
         q[first]
     }
 
@@ -174,7 +173,7 @@ class {:autocontracts} BoundedQueue<T(0)> {
 
 }
 
-method Main() {
+/*method Main() {
   print "BoundedQueue\n";
   var length := 3;
   var q := new BoundedQueue<int>(length);
@@ -211,13 +210,13 @@ method Main() {
   if (!q.IsFull()){
     q.Enqueue(-11);
   }
-  /*
-    PrintQueue -11 : -11 : -11 :
-    first: 0  last: 0  n: 3
-  */
+  
+    //pintQueue -11 : -11 : -11 :
+    //first: 0  last: 0  n: 3
+  
 if (!q.IsEmpty()){
     var e := q.Dequeue();
     print "\nElemDeq ";print(e);
   }
   print "\nPrintQueue "; q.PrintQueue();
-}
+}*/
