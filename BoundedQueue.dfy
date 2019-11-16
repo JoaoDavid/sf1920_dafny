@@ -25,7 +25,7 @@ class {:autocontracts} BoundedQueue<T(0)> {
         ((first == last) <==> (n == 0 || n == q.Length)) &&
         ((n > 0 && first < last) ==> (n == last - first)) &&
         ((n > 0 && first >= last) ==> (n == (q.Length + last - first))) &&
-        contents == if first < last then q[first..last] else if n == 0 then [] else q[first..q.Length] + q[0..last]
+        (contents == if first < last then q[first..last] else if n == 0 then [] else q[first..q.Length] + q[0..last])
     }
 
     //Initializes an empty queue of length, length
@@ -86,21 +86,13 @@ class {:autocontracts} BoundedQueue<T(0)> {
         if (first < last){            
             first := first + 1;
             contents := q[first..last];
-        } else if (first > last) {
+        } else {
             if (first + 1 == q.Length){
                 first := 0;
                 contents := q[first..last];
             } else {
                 first := first + 1;
                 contents := q[first..q.Length] + q[0..last];
-            }
-        } else{ //first == last
-            if (first + 1 == q.Length ){
-                first := 0;
-                contents := q[first..last];
-            } else {
-                first := first + 1;
-                contents :=  q[first..q.Length] + q[0..last];
             }
         }
     }
