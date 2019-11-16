@@ -86,7 +86,7 @@ class {:autocontracts} BoundedQueue<T(0)> {
         if (first < last){            
             first := first + 1;
             contents := q[first..last];
-        } else {
+        } else { //first >= last
             if (first + 1 == q.Length){
                 first := 0;
                 contents := q[first..last];
