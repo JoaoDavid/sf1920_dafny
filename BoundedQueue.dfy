@@ -21,6 +21,7 @@ class {:autocontracts} BoundedQueue<T(0)> {
         0 <= n <= q.Length &&
         0 <= first < q.Length &&
         0 <= last < q.Length &&
+        q.Length > 0 &&
         n == |contents| &&
         ((first == last) <==> (n == 0 || n == q.Length)) &&
         ((n > 0 && first < last) ==> (n == last - first)) &&
@@ -86,13 +87,16 @@ class {:autocontracts} BoundedQueue<T(0)> {
         if (first < last){            
             first := first + 1;
             contents := q[first..last];
+            assert Valid();
         } else { //first >= last
             if (first + 1 == q.Length){
                 first := 0;
                 contents := q[first..last];
+                assert Valid();
             } else {
                 first := first + 1;
                 contents := q[first..q.Length] + q[0..last];
+                 assert Valid();
             }
         }
     }
