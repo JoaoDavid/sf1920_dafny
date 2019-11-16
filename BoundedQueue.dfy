@@ -64,19 +64,11 @@ class {:autocontracts} BoundedQueue<T(0)> {
         if (first > last){            
             last := last + 1;
             contents := q[first..q.Length] + q[0..last];
-        } else if (first < last) {
+        } else { // first <= last
             if (last + 1 == q.Length){
                 last := 0;
                 contents := q[first..q.Length];
             } else {
-                last := last + 1;
-                contents := q[first..last];
-            }
-        } else { //first == last
-            if (last + 1 == q.Length ){ //when last == q.Length - 1
-                last := 0;
-                contents := q[first..q.Length];
-            } else {//when first == last (all indexes, except q.Length - 1)
                 last := last + 1;
                 contents := q[first..last];
             }
@@ -121,71 +113,4 @@ class {:autocontracts} BoundedQueue<T(0)> {
         q[first]
     }
 
-    //debug methods
-    method PrintQueue()
-        //reads this,q
-        requires Valid()
-        ensures Valid()
-        //ensures contents == old(contents)
-    {   
-        var i := 0;
-        while(i < q.Length) {
-            print q[i];
-            print " : ";
-            i := i + 1;
-        }
-        print "\n";
-        print "first: "; print first;
-        print "  last: "; print last;
-        print "  n: "; print n;
-    }
-
-}
-
-method Main() {
-  print "BoundedQueue\n";
-  var length := 3;
-  var q := new BoundedQueue<int>(length);
-  //---------------------
-  if (!q.IsFull()){
-    q.Enqueue(-1);
-  }
-  if (!q.IsFull()){
-    q.Enqueue(-2);
-  }
-  if (!q.IsFull()){
-    q.Enqueue(-3);
-  }
-  //full
-  print "\nPrintQueue "; q.PrintQueue();
-  if (!q.IsEmpty()){
-    var e := q.Dequeue();
-    print "\nElemDeq ";print(e);
-  }
-  if (!q.IsFull()){
-    q.Enqueue(-11);
-  }
-    if (!q.IsEmpty()){
-    var e := q.Dequeue();
-    print "\nElemDeq ";print(e);
-  }
-  if (!q.IsFull()){
-    q.Enqueue(-11);
-  }
-  if (!q.IsEmpty()){
-    var e := q.Dequeue();
-    print "\nElemDeq ";print(e);
-  }
-  if (!q.IsFull()){
-    q.Enqueue(-11);
-  }
-  
-    //pintQueue -11 : -11 : -11 :
-    //first: 0  last: 0  n: 3
-  
-if (!q.IsEmpty()){
-    var e := q.Dequeue();
-    print "\nElemDeq ";print(e);
-  }
-  print "\nPrintQueue "; q.PrintQueue();
 }
